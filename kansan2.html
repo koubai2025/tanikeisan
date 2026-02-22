@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>単位換算アプリ</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background: #eef2f7;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            padding: 16px;
+        }
+        .app-container {
+            max-width: 1300px;
+            width: 100%;
+            background: white;
+            border-radius: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            padding: 28px 24px;
+            margin: 0 auto;
+        }
+		h1 {
+		    font-size: 2.2rem;
+		    font-weight: 500;
+		    color: #0a2a44;
+		    margin: 0 0 6px 0;
+		    text-align: center;        /* 追加：中央寄せ */
+		    border-left: none;         /* 変更：左ボーダーを削除 */
+		    padding-left: 0;           /* 追加：左パディングをリセット */
+		}
+		.sub {
+		    color: #3e5f7a;
+		    font-size: 1rem;
+		    margin-bottom: 28px;
+		    text-align: center;        /* 追加：中央寄せ */
+		    padding-left: 0;           /* 追加：左パディングをリセット */
+		}
+        
+        .category {
+            font-size: 1.7rem;
+            font-weight: 400;
+            margin: 36px 0 16px 0;
+            padding-bottom: 6px;
+            border-bottom: 2px dashed #9bb7d4;
+            color: #1e3b5c;
+            text-align: center;
+        }
+        .category-small {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin: 24px 0 12px 0;
+            padding-bottom: 4px;
+            border-bottom: 1px dashed #b8cde0;
+            color: #2a4e72;
+            text-align: center;
+        }
+        .conversion-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 8px 12px;
+            margin: 14px 0;
+            padding: 12px 16px;
+            background: #f6f9fe;
+            border-radius: 60px;
+            border: 1px solid #dbe4ed;
+        }
+        .conversion-row:hover {
+            background: #edf3fa;
+        }
+        .input-group {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 40px;
+            padding: 2px 6px 2px 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            min-height: 54px;
+        }
+        .input-group input {
+            border: none;
+            background: transparent;
+            font-size: 1.2rem;
+            width: 95px;
+            max-width: 110px;
+            padding: 10px 0;
+            outline: none;
+            font-weight: 500;
+            color: #00264d;
+            text-align: right;
+        }
+        .input-group input::placeholder {
+            color: #b0beca;
+            font-weight: 300;
+            font-size: 1rem;
+        }
+        .input-group input:focus {
+            background-color: #fff3d6;
+            border-radius: 40px;
+        }
+        .unit-label {
+            font-size: 1.4rem;
+            color: #2f5575;
+            margin-left: 6px;
+            margin-right: 8px;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+        .equal-btn {
+            background: #c9dff2;
+            border: none;
+            font-size: 1.6rem;
+            line-height: 1;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #103450;
+            font-weight: 700;
+            transition: 0.12s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            margin: 0 2px;
+        }
+        .equal-btn:hover {
+            background: #b2cfed;
+            transform: scale(1.07);
+        }
+        .equal-btn:active {
+            background: #87adda;
+            transform: scale(0.97);
+        }
+        .trivia-block {
+            background: #dae6f2;
+            border-radius: 40px;
+            padding: 24px 22px;
+            margin-top: 40px;
+            text-align: center;
+        }
+        .trivia-title {
+            font-weight: 600;
+            font-size: 1.6rem;
+            color: #093853;
+            margin-bottom: 18px;
+        }
+        .trivia-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 24px 36px;
+        }
+        .trivia-item {
+            background: white;
+            border-radius: 40px;
+            padding: 18px 24px;
+            box-shadow: 0 5px 12px #00000012;
+            font-size: 1rem;
+            min-width: 200px;
+        }
+        .small-note {
+            font-size: 0.9rem;
+            color: #2b4b68;
+            margin-top: 28px;
+            border-top: 1px solid #a6bed6;
+            padding-top: 18px;
+        }
+        .copyright {
+            text-align: center;
+            color: #406e96;
+            margin-top: 10px;
+        }
+        @media (max-width: 750px) {
+            .app-container { padding: 16px; }
+            h1 { font-size: 2rem; }
+            .input-group input { width: 70px; font-size: 1rem; }
+            .equal-btn { width: 44px; height: 44px; font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <h1>📐 単位換算アプリ</h1>
+    <div class="sub">どこでも入力・クリックでクリア・どの＝でも計算・Enter対応・歩き時間追加</div>
+
+    <!-- 長さ -->
+    <div class="category">📏 長さ</div>
+    <!-- inch -->
+    <div class="conversion-row" data-row="inch">
+        <div class="input-group"><input type="number" class="conv-input" id="inch-in" placeholder="1" step="any" value="1"></div><span class="unit-label">inch</span>
+        <button class="equal-btn" data-row="inch">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="inch-mm" placeholder="25.4" step="any" value="25.4"></div><span class="unit-label">mm</span>
+        <button class="equal-btn" data-row="inch">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="inch-m" placeholder="0.0254" step="any" value="0.0254"></div><span class="unit-label">meters</span>
+    </div>
+    <!-- foot -->
+    <div class="conversion-row" data-row="foot">
+        <div class="input-group"><input type="number" class="conv-input" id="foot-in" placeholder="1" value="1"></div><span class="unit-label">foot</span>
+        <button class="equal-btn" data-row="foot">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="foot-cm" placeholder="30.48" value="30.48"></div><span class="unit-label">cm</span>
+        <button class="equal-btn" data-row="foot">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="foot-mm" placeholder="304.8" value="304.8"></div><span class="unit-label">mm</span>
+    </div>
+    <!-- yard -->
+    <div class="conversion-row" data-row="yard">
+        <div class="input-group"><input type="number" class="conv-input" id="yard-in" placeholder="1" value="1"></div><span class="unit-label">yard</span>
+        <button class="equal-btn" data-row="yard">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="yard-m" placeholder="0.9144" value="0.9144"></div><span class="unit-label">m</span>
+        <button class="equal-btn" data-row="yard">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="yard-cm" placeholder="91.44" value="91.44"></div><span class="unit-label">cm</span>
+    </div>
+    <!-- mile -->
+    <div class="conversion-row" data-row="mile">
+        <div class="input-group"><input type="number" class="conv-input" id="mile-in" placeholder="1" value="1"></div><span class="unit-label">mile</span>
+        <button class="equal-btn" data-row="mile">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="mile-km" placeholder="1.60934" value="1.60934"></div><span class="unit-label">km</span>
+        <button class="equal-btn" data-row="mile">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="mile-m" placeholder="1609.34" value="1609.34"></div><span class="unit-label">m</span>
+    </div>
+
+    <!-- 重さ -->
+    <div class="category">⚖️ 重さ</div>
+    <div class="conversion-row" data-row="ounce">
+        <div class="input-group"><input type="number" class="conv-input" id="ounce-in" placeholder="1" value="1"></div><span class="unit-label">ounce</span>
+        <button class="equal-btn" data-row="ounce">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="ounce-g" placeholder="28.3495" value="28.3495"></div><span class="unit-label">g</span>
+        <button class="equal-btn" data-row="ounce">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="ounce-kg" placeholder="0.02835" value="0.02835"></div><span class="unit-label">kg</span>
+    </div>
+    <div class="conversion-row" data-row="pound">
+        <div class="input-group"><input type="number" class="conv-input" id="pound-in" placeholder="1" value="1"></div><span class="unit-label">pound</span>
+        <button class="equal-btn" data-row="pound">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="pound-kg" placeholder="0.453592" value="0.453592"></div><span class="unit-label">kg</span>
+        <button class="equal-btn" data-row="pound">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="pound-g" placeholder="453.592" value="453.592"></div><span class="unit-label">g</span>
+    </div>
+
+    <!-- 容量 -->
+    <div class="category">🧪 容量</div>
+    <div class="conversion-row" data-row="tsp">
+        <div class="input-group"><input type="number" class="conv-input" id="tsp-in" placeholder="1" value="1"></div><span class="unit-label">tsp</span>
+        <button class="equal-btn" data-row="tsp">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="tsp-ml" placeholder="4.92892" value="4.92892"></div><span class="unit-label">ml</span>
+        <button class="equal-btn" data-row="tsp">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="tsp-l" placeholder="0.004929" value="0.004929"></div><span class="unit-label">L</span>
+    </div>
+    <div class="conversion-row" data-row="tbsp">
+        <div class="input-group"><input type="number" class="conv-input" id="tbsp-in" placeholder="1" value="1"></div><span class="unit-label">tbsp</span>
+        <button class="equal-btn" data-row="tbsp">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="tbsp-ml" placeholder="14.7868" value="14.7868"></div><span class="unit-label">ml</span>
+        <button class="equal-btn" data-row="tbsp">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="tbsp-l" placeholder="0.014787" value="0.014787"></div><span class="unit-label">L</span>
+    </div>
+    <div class="conversion-row" data-row="oz">
+        <div class="input-group"><input type="number" class="conv-input" id="oz-in" placeholder="1" value="1"></div><span class="unit-label">fl oz</span>
+        <button class="equal-btn" data-row="oz">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="oz-l" placeholder="0.0295735" value="0.0295735"></div><span class="unit-label">L</span>
+        <button class="equal-btn" data-row="oz">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="oz-ml" placeholder="29.5735" value="29.5735"></div><span class="unit-label">ml</span>
+    </div>
+    <div class="conversion-row" data-row="cup">
+        <div class="input-group"><input type="number" class="conv-input" id="cup-in" placeholder="1" value="1"></div><span class="unit-label">cup</span>
+        <button class="equal-btn" data-row="cup">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="cup-l" placeholder="0.236588" value="0.236588"></div><span class="unit-label">L</span>
+        <button class="equal-btn" data-row="cup">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="cup-ml" placeholder="236.588" value="236.588"></div><span class="unit-label">ml</span>
+    </div>
+    <div class="conversion-row" data-row="pt">
+        <div class="input-group"><input type="number" class="conv-input" id="pt-in" placeholder="1" value="1"></div><span class="unit-label">pint</span>
+        <button class="equal-btn" data-row="pt">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="pt-ml" placeholder="473.176" value="473.176"></div><span class="unit-label">ml</span>
+        <button class="equal-btn" data-row="pt">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="pt-l" placeholder="0.473176" value="0.473176"></div><span class="unit-label">L</span>
+    </div>
+    <div class="conversion-row" data-row="qt">
+        <div class="input-group"><input type="number" class="conv-input" id="qt-in" placeholder="1" value="1"></div><span class="unit-label">quart</span>
+        <button class="equal-btn" data-row="qt">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="qt-l" placeholder="0.946353" value="0.946353"></div><span class="unit-label">L</span>
+        <button class="equal-btn" data-row="qt">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="qt-ml" placeholder="946.353" value="946.353"></div><span class="unit-label">ml</span>
+    </div>
+    <div class="conversion-row" data-row="usg">
+        <div class="input-group"><input type="number" class="conv-input" id="usg-in" placeholder="1" value="1"></div><span class="unit-label">US gal</span>
+        <button class="equal-btn" data-row="usg">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="usg-l" placeholder="3.78541" value="3.78541"></div><span class="unit-label">L</span>
+        <button class="equal-btn" data-row="usg">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="usg-ml" placeholder="3785.41" value="3785.41"></div><span class="unit-label">ml</span>
+    </div>
+    <div class="conversion-row" data-row="ukg">
+        <div class="input-group"><input type="number" class="conv-input" id="ukg-in" placeholder="1" value="1"></div><span class="unit-label">Imp gal</span>
+        <button class="equal-btn" data-row="ukg">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="ukg-l" placeholder="4.54609" value="4.54609"></div><span class="unit-label">L</span>
+        <button class="equal-btn" data-row="ukg">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="ukg-ml" placeholder="4546.09" value="4546.09"></div><span class="unit-label">ml</span>
+    </div>
+
+    <!-- 面積 -->
+    <div class="category">📐 面積</div>
+    <div class="conversion-row" data-row="sqft">
+        <div class="input-group"><input type="number" class="conv-input" id="sqft-in" placeholder="1" value="1"></div><span class="unit-label">sq ft</span>
+        <button class="equal-btn" data-row="sqft">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="sqft-m2" placeholder="0.092903" value="0.092903"></div><span class="unit-label">m²</span>
+        <button class="equal-btn" data-row="sqft">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="sqft-cm2" placeholder="929.03" value="929.03"></div><span class="unit-label">cm²</span>
+    </div>
+    <div class="conversion-row" data-row="acre">
+        <div class="input-group"><input type="number" class="conv-input" id="acre-in" placeholder="1" value="1"></div><span class="unit-label">acre</span>
+        <button class="equal-btn" data-row="acre">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="acre-m2" placeholder="4046.86" value="4046.86"></div><span class="unit-label">m²</span>
+       <!-- <button class="equal-btn" data-row="acre">＝</button>-->
+    </div>
+
+    <!-- 温度 -->
+    <div class="category">🌡️ 温度</div>
+    <div class="conversion-row" data-row="temp">
+        <div class="input-group"><input type="number" class="conv-input" id="celsius" placeholder="37" value="37"></div><span class="unit-label">°C</span>
+        <button class="equal-btn" data-row="temp">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="fahrenheit" placeholder="98.6" value="98.6"></div><span class="unit-label">°F</span>
+       <!-- <button class="equal-btn" data-row="temp">＝</button>-->
+        <span class="formula" style="color:#1b4b6e;">°C=(5/9)×(°F-32)</span>
+    </div>
+
+    <!-- 身長 -->
+    <div class="category">🧍 身長</div>
+    <div class="conversion-row" data-row="height">
+        <div class="input-group"><input type="number" class="conv-input" id="height-ft" placeholder="5" value="5"></div><span class="unit-label">ft</span>
+        <span style="font-size:1.8rem;">'</span>
+        <div class="input-group"><input type="number" class="conv-input" id="height-in" placeholder="8" value="8"></div><span class="unit-label">in</span>
+        <button class="equal-btn" data-row="height">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="height-cm" placeholder="172.72" value="172.72"></div><span class="unit-label">cm</span>
+        <!--<button class="equal-btn" data-row="height">＝</button>-->
+    </div>
+
+    <!-- 日本特有な単位 -->
+    <div class="category">🗾 日本特有な単位</div>
+    <!-- 升 -->
+    <div class="conversion-row" data-row="sho">
+        <div class="input-group"><input type="number" class="conv-input" id="sho-in" placeholder="1" value="1"></div><span class="unit-label">升</span>
+        <button class="equal-btn" data-row="sho">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="sho-l" placeholder="1.8039" value="1.8039"></div><span class="unit-label">L</span>
+        <button class="equal-btn" data-row="sho">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="sho-ml" placeholder="1803.9" value="1803.9"></div><span class="unit-label">ml</span>
+    </div>
+    <!-- 合 -->
+    <div class="conversion-row" data-row="go">
+        <div class="input-group"><input type="number" class="conv-input" id="go-in" placeholder="1" value="1"></div><span class="unit-label">合</span>
+        <button class="equal-btn" data-row="go">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="go-ml" placeholder="180.39" value="180.39"></div><span class="unit-label">ml</span>
+        <button class="equal-btn" data-row="go">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="go-l" placeholder="0.18039" value="0.18039"></div><span class="unit-label">L</span>
+    </div>
+    <!-- 斗 -->
+    <div class="conversion-row" data-row="to">
+        <div class="input-group"><input type="number" class="conv-input" id="to-in" placeholder="1" value="1"></div><span class="unit-label">斗</span>
+        <button class="equal-btn" data-row="to">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="to-l" placeholder="18.039" value="18.039"></div><span class="unit-label">L</span>
+        <button class="equal-btn" data-row="to">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="to-ml" placeholder="18039" value="18039"></div><span class="unit-label">ml</span>
+    </div>
+    <!-- 石 -->
+    <div class="conversion-row" data-row="koku">
+        <div class="input-group"><input type="number" class="conv-input" id="koku-in" placeholder="1" value="1"></div><span class="unit-label">石</span>
+        <button class="equal-btn" data-row="koku">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="koku-l" placeholder="180.39" value="180.39"></div><span class="unit-label">L</span>
+        <button class="equal-btn" data-row="koku">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="koku-ml" placeholder="180390" value="180390"></div><span class="unit-label">ml</span>
+    </div>
+    <!-- 尺 -->
+    <div class="conversion-row" data-row="shaku">
+        <div class="input-group"><input type="number" class="conv-input" id="shaku-in" placeholder="1" value="1"></div><span class="unit-label">尺</span>
+        <button class="equal-btn" data-row="shaku">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="shaku-cm" placeholder="30.303" value="30.303"></div><span class="unit-label">cm</span>
+        <!--<button class="equal-btn" data-row="shaku">＝</button>-->
+    </div>
+    <!-- 寸 -->
+    <div class="conversion-row" data-row="sun">
+        <div class="input-group"><input type="number" class="conv-input" id="sun-in" placeholder="1" value="1"></div><span class="unit-label">寸</span>
+        <button class="equal-btn" data-row="sun">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="sun-cm" placeholder="3.0303" value="3.0303"></div><span class="unit-label">cm</span>
+        <!--<button class="equal-btn" data-row="sun">＝</button>-->
+    </div>
+    <!-- 間 -->
+    <div class="conversion-row" data-row="ken">
+        <div class="input-group"><input type="number" class="conv-input" id="ken-in" placeholder="1" value="1"></div><span class="unit-label">間</span>
+        <button class="equal-btn" data-row="ken">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="ken-m" placeholder="1.818" value="1.818"></div><span class="unit-label">m</span>
+        <!--<button class="equal-btn" data-row="ken">＝</button>-->
+    </div>
+    <!-- 匁 (もんめ) -->
+    <div class="conversion-row" data-row="momme">
+        <div class="input-group"><input type="number" class="conv-input" id="momme-in" placeholder="1" value="1"></div><span class="unit-label">匁</span>
+        <button class="equal-btn" data-row="momme">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="momme-g" placeholder="3.75" value="3.75"></div><span class="unit-label">g</span>
+        <button class="equal-btn" data-row="momme">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="momme-kg" placeholder="0.00375" value="0.00375"></div><span class="unit-label">kg</span>
+    </div>
+    <!-- 貫 -->
+    <div class="conversion-row" data-row="kan">
+        <div class="input-group"><input type="number" class="conv-input" id="kan-in" placeholder="1" value="1"></div><span class="unit-label">貫</span>
+        <button class="equal-btn" data-row="kan">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="kan-kg" placeholder="3.75" value="3.75"></div><span class="unit-label">kg</span>
+        <button class="equal-btn" data-row="kan">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="kan-g" placeholder="3750" value="3750"></div><span class="unit-label">g</span>
+    </div>
+    <!-- 坪 (修正済み: cm² と表示) -->
+    <div class="conversion-row" data-row="tsubo">
+        <div class="input-group"><input type="number" class="conv-input" id="tsubo-in" placeholder="1" value="1"></div><span class="unit-label">坪</span>
+        <button class="equal-btn" data-row="tsubo">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="tsubo-m2" placeholder="3.30579" value="3.30579"></div><span class="unit-label">m²</span>
+        <button class="equal-btn" data-row="tsubo">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="tsubo-cm2" placeholder="3.30579" value="3.30579"></div><span class="unit-label">cm² (×10³)</span>
+    </div>
+    <!-- 畳 -->
+    <div class="conversion-row" data-row="jyo">
+        <div class="input-group"><input type="number" class="conv-input" id="jyo-in" placeholder="1" value="1"></div><span class="unit-label">畳</span>
+        <button class="equal-btn" data-row="jyo">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="jyo-m2" placeholder="1.62" value="1.62"></div><span class="unit-label">m²</span>
+       <!-- <button class="equal-btn" data-row="jyo">＝</button>-->
+    </div>
+
+    <!-- ★★★ 歩き時間計算 ★★★ -->
+    <div class="category">🚶 歩き時間計算</div>
+    
+    <!-- 速く（10min/km） -->
+    <div class="conversion-row" data-row="walk_fast">
+        <span class="unit-label" style="background:#d4e3f0; padding:8px 16px; border-radius:40px;">速く (10min/km)</span>
+        <div class="input-group"><input type="number" class="conv-input" id="walk-fast-km" placeholder="1" value="1"></div><span class="unit-label">km</span>
+        <button class="equal-btn" data-row="walk_fast">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="walk-fast-min" placeholder="10" value="10"></div><span class="unit-label">min</span>
+        <button class="equal-btn" data-row="walk_fast">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="walk-fast-h" placeholder="0.1667" step="any" value="0.1667"></div><span class="unit-label">h</span>
+    </div>
+    
+    <!-- 普通（13min/km） -->
+    <div class="conversion-row" data-row="walk_normal">
+        <span class="unit-label" style="background:#d4e3f0; padding:8px 16px; border-radius:40px;">普通 (13min/km)</span>
+        <div class="input-group"><input type="number" class="conv-input" id="walk-normal-km" placeholder="1" value="1"></div><span class="unit-label">km</span>
+        <button class="equal-btn" data-row="walk_normal">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="walk-normal-min" placeholder="13" value="13"></div><span class="unit-label">min</span>
+        <button class="equal-btn" data-row="walk_normal">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="walk-normal-h" placeholder="0.2167" step="any" value="0.2167"></div><span class="unit-label">h</span>
+    </div>
+    
+    <!-- ゆっくり（18min/km） -->
+    <div class="conversion-row" data-row="walk_slow">
+        <span class="unit-label" style="background:#d4e3f0; padding:8px 16px; border-radius:40px;">ゆっくり (18min/km)</span>
+        <div class="input-group"><input type="number" class="conv-input" id="walk-slow-km" placeholder="1" value="1"></div><span class="unit-label">km</span>
+        <button class="equal-btn" data-row="walk_slow">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="walk-slow-min" placeholder="18" value="18"></div><span class="unit-label">min</span>
+        <button class="equal-btn" data-row="walk_slow">＝</button>
+        <div class="input-group"><input type="number" class="conv-input" id="walk-slow-h" placeholder="0.3" step="any" value="0.3"></div><span class="unit-label">h</span>
+    </div>
+
+    <!-- 豆知識 -->
+    <div class="trivia-block">
+        <div class="trivia-title">📘 豆知識</div>
+        <div class="trivia-grid">
+            <div class="trivia-item">0.5 miles = half mile<br>0.25 miles = quarter mile<br>0.75 miles = three quarter mile</div>
+            <div class="trivia-item">🇬🇧 pint 約1.14L<br>🇺🇸 pint 約0.95L</div>
+            <div class="trivia-item">🇬🇧 fluid oz 約0.028L<br>🇺🇸 fluid oz 約0.03L</div>
+            <div class="trivia-item">🇬🇧 quart 約1.13L<br>🇺🇸 quart 約0.94L</div>
+            <div class="trivia-item">🇬🇧 gallon 約4.55L<br>🇺🇸 gallon 約3.79L</div>
+            <div class="trivia-item">stone: 1 = 6.35kg = 14 pounds</div>
+        </div>
+        <div class="small-note">免責声明：本アプリは学習用、計算ミスによる責任を負いません。</div>
+        <div class="copyright">copyright@KO</div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // 最後に変更された入力フィールドを追跡
+        let lastEditedInput = null;
+
+        // 全入力フィールド
+        const allInputs = document.querySelectorAll('input.conv-input');
+
+        // クリックでデフォルト値をクリア
+        allInputs.forEach(inp => {
+            inp.addEventListener('click', function(e) {
+                if (this.value !== '') {
+                    this.value = '';
+                }
+                this.focus();
+            });
+
+            // 入力イベントで最後に編集した入力を記録
+            inp.addEventListener('input', function() {
+                lastEditedInput = this;
+            });
+
+            // フォーカスイベントでも記録
+            inp.addEventListener('focus', function() {
+                lastEditedInput = this;
+            });
+        });
+
+        // 行の計算関数（最後に編集された入力に基づく）
+        function calculateRow(rowName) {
+            const rowDiv = document.querySelector(`.conversion-row[data-row="${rowName}"]`);
+            if (!rowDiv) return;
+
+            // その行の全入力フィールド
+            const rowInputs = rowDiv.querySelectorAll('input.conv-input');
+            if (rowInputs.length === 0) return;
+
+            // 1. 最後に編集された入力がこの行に属するか
+            let activeInput = null;
+            if (lastEditedInput && rowDiv.contains(lastEditedInput) && lastEditedInput.value.trim() !== '') {
+                activeInput = lastEditedInput;
+            }
+
+            // 2. 属さない場合は空でない最初の入力
+            if (!activeInput) {
+                for (let inp of rowInputs) {
+                    if (inp.value.trim() !== '') {
+                        activeInput = inp;
+                        break;
+                    }
+                }
+            }
+
+            // 3. それでもなければ最初の入力
+            if (!activeInput) {
+                activeInput = rowInputs[0];
+            }
+
+            const activeId = activeInput.id;
+            const activeVal = parseFloat(activeInput.value);
+            if (isNaN(activeVal)) return;
+
+            // 行ごとの計算ロジックを実行
+            if (rowCalculators[rowName]) {
+                rowCalculators[rowName](activeId, activeVal);
+            }
+        }
+
+        // 各行の計算ロジック（既存分＋歩き時間追加）
+        const rowCalculators = {
+            // 長さ
+            inch: function(activeId, val) {
+                if (activeId === 'inch-in') {
+                    document.getElementById('inch-mm').value = (val * 25.4).toFixed(4);
+                    document.getElementById('inch-m').value = (val * 0.0254).toFixed(6);
+                } else if (activeId === 'inch-mm') {
+                    document.getElementById('inch-in').value = (val / 25.4).toFixed(6);
+                    document.getElementById('inch-m').value = (val / 25.4 * 0.0254).toFixed(6);
+                } else if (activeId === 'inch-m') {
+                    document.getElementById('inch-in').value = (val / 0.0254).toFixed(6);
+                    document.getElementById('inch-mm').value = (val / 0.0254 * 25.4).toFixed(4);
+                }
+            },
+            foot: function(activeId, val) {
+                if (activeId === 'foot-in') {
+                    document.getElementById('foot-cm').value = (val * 30.48).toFixed(4);
+                    document.getElementById('foot-mm').value = (val * 304.8).toFixed(3);
+                } else if (activeId === 'foot-cm') {
+                    document.getElementById('foot-in').value = (val / 30.48).toFixed(5);
+                    document.getElementById('foot-mm').value = (val / 30.48 * 304.8).toFixed(3);
+                } else if (activeId === 'foot-mm') {
+                    document.getElementById('foot-in').value = (val / 304.8).toFixed(5);
+                    document.getElementById('foot-cm').value = (val / 304.8 * 30.48).toFixed(4);
+                }
+            },
+            yard: function(activeId, val) {
+                if (activeId === 'yard-in') {
+                    document.getElementById('yard-m').value = (val * 0.9144).toFixed(5);
+                    document.getElementById('yard-cm').value = (val * 91.44).toFixed(4);
+                } else if (activeId === 'yard-m') {
+                    document.getElementById('yard-in').value = (val / 0.9144).toFixed(5);
+                    document.getElementById('yard-cm').value = (val / 0.9144 * 91.44).toFixed(4);
+                } else if (activeId === 'yard-cm') {
+                    document.getElementById('yard-in').value = (val / 91.44).toFixed(5);
+                    document.getElementById('yard-m').value = (val / 91.44 * 0.9144).toFixed(5);
+                }
+            },
+            mile: function(activeId, val) {
+                if (activeId === 'mile-in') {
+                    document.getElementById('mile-km').value = (val * 1.60934).toFixed(5);
+                    document.getElementById('mile-m').value = (val * 1609.34).toFixed(2);
+                } else if (activeId === 'mile-km') {
+                    document.getElementById('mile-in').value = (val / 1.60934).toFixed(5);
+                    document.getElementById('mile-m').value = (val / 1.60934 * 1609.34).toFixed(2);
+                } else if (activeId === 'mile-m') {
+                    document.getElementById('mile-in').value = (val / 1609.34).toFixed(6);
+                    document.getElementById('mile-km').value = (val / 1609.34 * 1.60934).toFixed(5);
+                }
+            },
+            // 重さ
+            ounce: function(activeId, val) {
+                if (activeId === 'ounce-in') {
+                    document.getElementById('ounce-g').value = (val * 28.3495).toFixed(4);
+                    document.getElementById('ounce-kg').value = (val * 0.0283495).toFixed(6);
+                } else if (activeId === 'ounce-g') {
+                    document.getElementById('ounce-in').value = (val / 28.3495).toFixed(5);
+                    document.getElementById('ounce-kg').value = (val / 28.3495 * 0.0283495).toFixed(6);
+                } else if (activeId === 'ounce-kg') {
+                    document.getElementById('ounce-in').value = (val / 0.0283495).toFixed(4);
+                    document.getElementById('ounce-g').value = (val / 0.0283495 * 28.3495).toFixed(4);
+                }
+            },
+            pound: function(activeId, val) {
+                if (activeId === 'pound-in') {
+                    document.getElementById('pound-kg').value = (val * 0.453592).toFixed(6);
+                    document.getElementById('pound-g').value = (val * 453.592).toFixed(3);
+                } else if (activeId === 'pound-kg') {
+                    document.getElementById('pound-in').value = (val / 0.453592).toFixed(5);
+                    document.getElementById('pound-g').value = (val / 0.453592 * 453.592).toFixed(3);
+                } else if (activeId === 'pound-g') {
+                    document.getElementById('pound-in').value = (val / 453.592).toFixed(6);
+                    document.getElementById('pound-kg').value = (val / 453.592 * 0.453592).toFixed(6);
+                }
+            },
+            // 容量
+            tsp: function(activeId, val) {
+                if (activeId === 'tsp-in') {
+                    document.getElementById('tsp-ml').value = (val * 4.92892).toFixed(5);
+                    document.getElementById('tsp-l').value = (val * 0.00492892).toFixed(7);
+                } else if (activeId === 'tsp-ml') {
+                    document.getElementById('tsp-in').value = (val / 4.92892).toFixed(5);
+                    document.getElementById('tsp-l').value = (val / 4.92892 * 0.00492892).toFixed(7);
+                } else if (activeId === 'tsp-l') {
+                    document.getElementById('tsp-in').value = (val / 0.00492892).toFixed(4);
+                    document.getElementById('tsp-ml').value = (val / 0.00492892 * 4.92892).toFixed(5);
+                }
+            },
+            tbsp: function(activeId, val) {
+                if (activeId === 'tbsp-in') {
+                    document.getElementById('tbsp-ml').value = (val * 14.7868).toFixed(5);
+                    document.getElementById('tbsp-l').value = (val * 0.0147868).toFixed(7);
+                } else if (activeId === 'tbsp-ml') {
+                    document.getElementById('tbsp-in').value = (val / 14.7868).toFixed(5);
+                    document.getElementById('tbsp-l').value = (val / 14.7868 * 0.0147868).toFixed(7);
+                } else if (activeId === 'tbsp-l') {
+                    document.getElementById('tbsp-in').value = (val / 0.0147868).toFixed(4);
+                    document.getElementById('tbsp-ml').value = (val / 0.0147868 * 14.7868).toFixed(5);
+                }
+            },
+            oz: function(activeId, val) {
+                if (activeId === 'oz-in') {
+                    document.getElementById('oz-l').value = (val * 0.0295735).toFixed(7);
+                    document.getElementById('oz-ml').value = (val * 29.5735).toFixed(4);
+                } else if (activeId === 'oz-l') {
+                    document.getElementById('oz-in').value = (val / 0.0295735).toFixed(5);
+                    document.getElementById('oz-ml').value = (val / 0.0295735 * 29.5735).toFixed(4);
+                } else if (activeId === 'oz-ml') {
+                    document.getElementById('oz-in').value = (val / 29.5735).toFixed(5);
+                    document.getElementById('oz-l').value = (val / 29.5735 * 0.0295735).toFixed(7);
+                }
+            },
+            cup: function(activeId, val) {
+                if (activeId === 'cup-in') {
+                    document.getElementById('cup-l').value = (val * 0.236588).toFixed(6);
+                    document.getElementById('cup-ml').value = (val * 236.588).toFixed(3);
+                } else if (activeId === 'cup-l') {
+                    document.getElementById('cup-in').value = (val / 0.236588).toFixed(5);
+                    document.getElementById('cup-ml').value = (val / 0.236588 * 236.588).toFixed(3);
+                } else if (activeId === 'cup-ml') {
+                    document.getElementById('cup-in').value = (val / 236.588).toFixed(5);
+                    document.getElementById('cup-l').value = (val / 236.588 * 0.236588).toFixed(6);
+                }
+            },
+            pt: function(activeId, val) {
+                if (activeId === 'pt-in') {
+                    document.getElementById('pt-ml').value = (val * 473.176).toFixed(3);
+                    document.getElementById('pt-l').value = (val * 0.473176).toFixed(6);
+                } else if (activeId === 'pt-ml') {
+                    document.getElementById('pt-in').value = (val / 473.176).toFixed(5);
+                    document.getElementById('pt-l').value = (val / 473.176 * 0.473176).toFixed(6);
+                } else if (activeId === 'pt-l') {
+                    document.getElementById('pt-in').value = (val / 0.473176).toFixed(5);
+                    document.getElementById('pt-ml').value = (val / 0.473176 * 473.176).toFixed(3);
+                }
+            },
+            qt: function(activeId, val) {
+                if (activeId === 'qt-in') {
+                    document.getElementById('qt-l').value = (val * 0.946353).toFixed(6);
+                    document.getElementById('qt-ml').value = (val * 946.353).toFixed(3);
+                } else if (activeId === 'qt-l') {
+                    document.getElementById('qt-in').value = (val / 0.946353).toFixed(5);
+                    document.getElementById('qt-ml').value = (val / 0.946353 * 946.353).toFixed(3);
+                } else if (activeId === 'qt-ml') {
+                    document.getElementById('qt-in').value = (val / 946.353).toFixed(5);
+                    document.getElementById('qt-l').value = (val / 946.353 * 0.946353).toFixed(6);
+                }
+            },
+            usg: function(activeId, val) {
+                if (activeId === 'usg-in') {
+                    document.getElementById('usg-l').value = (val * 3.78541).toFixed(5);
+                    document.getElementById('usg-ml').value = (val * 3785.41).toFixed(2);
+                } else if (activeId === 'usg-l') {
+                    document.getElementById('usg-in').value = (val / 3.78541).toFixed(5);
+                    document.getElementById('usg-ml').value = (val / 3.78541 * 3785.41).toFixed(2);
+                } else if (activeId === 'usg-ml') {
+                    document.getElementById('usg-in').value = (val / 3785.41).toFixed(6);
+                    document.getElementById('usg-l').value = (val / 3785.41 * 3.78541).toFixed(5);
+                }
+            },
+            ukg: function(activeId, val) {
+                if (activeId === 'ukg-in') {
+                    document.getElementById('ukg-l').value = (val * 4.54609).toFixed(5);
+                    document.getElementById('ukg-ml').value = (val * 4546.09).toFixed(2);
+                } else if (activeId === 'ukg-l') {
+                    document.getElementById('ukg-in').value = (val / 4.54609).toFixed(5);
+                    document.getElementById('ukg-ml').value = (val / 4.54609 * 4546.09).toFixed(2);
+                } else if (activeId === 'ukg-ml') {
+                    document.getElementById('ukg-in').value = (val / 4546.09).toFixed(6);
+                    document.getElementById('ukg-l').value = (val / 4546.09 * 4.54609).toFixed(5);
+                }
+            },
+            // 面積
+            sqft: function(activeId, val) {
+                if (activeId === 'sqft-in') {
+                    document.getElementById('sqft-m2').value = (val * 0.092903).toFixed(6);
+                    document.getElementById('sqft-cm2').value = (val * 929.03).toFixed(2);
+                } else if (activeId === 'sqft-m2') {
+                    document.getElementById('sqft-in').value = (val / 0.092903).toFixed(5);
+                    document.getElementById('sqft-cm2').value = (val / 0.092903 * 929.03).toFixed(2);
+                } else if (activeId === 'sqft-cm2') {
+                    document.getElementById('sqft-in').value = (val / 929.03).toFixed(5);
+                    document.getElementById('sqft-m2').value = (val / 929.03 * 0.092903).toFixed(6);
+                }
+            },
+            acre: function(activeId, val) {
+                if (activeId === 'acre-in') {
+                    document.getElementById('acre-m2').value = (val * 4046.86).toFixed(2);
+                } else {
+                    document.getElementById('acre-in').value = (val / 4046.86).toFixed(4);
+                }
+            },
+            // 温度
+            temp: function(activeId, val) {
+                if (activeId === 'celsius') {
+                    document.getElementById('fahrenheit').value = (val * 9/5 + 32).toFixed(4);
+                } else {
+                    document.getElementById('celsius').value = ((val - 32) * 5/9).toFixed(4);
+                }
+            },
+            // 身長
+            height: function(activeId, val) {
+                if (activeId === 'height-cm') {
+                    let totalInches = val / 2.54;
+                    let ft = Math.floor(totalInches / 12);
+                    let inch = totalInches % 12;
+                    document.getElementById('height-ft').value = ft;
+                    document.getElementById('height-in').value = inch.toFixed(2);
+                } else {
+                    let ft = parseFloat(document.getElementById('height-ft').value) || 0;
+                    let inch = parseFloat(document.getElementById('height-in').value) || 0;
+                    if (activeId === 'height-ft') ft = val;
+                    if (activeId === 'height-in') inch = val;
+                    let totalInches = ft * 12 + inch;
+                    document.getElementById('height-cm').value = (totalInches * 2.54).toFixed(2);
+                }
+            },
+            // 日本単位
+            sho: function(activeId, val) {
+                if (activeId === 'sho-in') {
+                    document.getElementById('sho-l').value = (val * 1.8039).toFixed(4);
+                    document.getElementById('sho-ml').value = (val * 1803.9).toFixed(1);
+                } else if (activeId === 'sho-l') {
+                    document.getElementById('sho-in').value = (val / 1.8039).toFixed(4);
+                    document.getElementById('sho-ml').value = (val / 1.8039 * 1803.9).toFixed(1);
+                } else if (activeId === 'sho-ml') {
+                    document.getElementById('sho-in').value = (val / 1803.9).toFixed(5);
+                    document.getElementById('sho-l').value = (val / 1803.9 * 1.8039).toFixed(4);
+                }
+            },
+            go: function(activeId, val) {
+                if (activeId === 'go-in') {
+                    document.getElementById('go-ml').value = (val * 180.39).toFixed(2);
+                    document.getElementById('go-l').value = (val * 0.18039).toFixed(5);
+                } else if (activeId === 'go-ml') {
+                    document.getElementById('go-in').value = (val / 180.39).toFixed(4);
+                    document.getElementById('go-l').value = (val / 180.39 * 0.18039).toFixed(5);
+                } else if (activeId === 'go-l') {
+                    document.getElementById('go-in').value = (val / 0.18039).toFixed(4);
+                    document.getElementById('go-ml').value = (val / 0.18039 * 180.39).toFixed(2);
+                }
+            },
+            to: function(activeId, val) {
+                if (activeId === 'to-in') {
+                    document.getElementById('to-l').value = (val * 18.039).toFixed(3);
+                    document.getElementById('to-ml').value = (val * 18039).toFixed(0);
+                } else if (activeId === 'to-l') {
+                    document.getElementById('to-in').value = (val / 18.039).toFixed(4);
+                    document.getElementById('to-ml').value = (val / 18.039 * 18039).toFixed(0);
+                } else if (activeId === 'to-ml') {
+                    document.getElementById('to-in').value = (val / 18039).toFixed(6);
+                    document.getElementById('to-l').value = (val / 18039 * 18.039).toFixed(3);
+                }
+            },
+            koku: function(activeId, val) {
+                if (activeId === 'koku-in') {
+                    document.getElementById('koku-l').value = (val * 180.39).toFixed(2);
+                    document.getElementById('koku-ml').value = (val * 180390).toFixed(0);
+                } else if (activeId === 'koku-l') {
+                    document.getElementById('koku-in').value = (val / 180.39).toFixed(4);
+                    document.getElementById('koku-ml').value = (val / 180.39 * 180390).toFixed(0);
+                } else if (activeId === 'koku-ml') {
+                    document.getElementById('koku-in').value = (val / 180390).toFixed(6);
+                    document.getElementById('koku-l').value = (val / 180390 * 180.39).toFixed(2);
+                }
+            },
+            shaku: function(activeId, val) {
+                if (activeId === 'shaku-in') {
+                    document.getElementById('shaku-cm').value = (val * 30.303).toFixed(3);
+                } else {
+                    document.getElementById('shaku-in').value = (val / 30.303).toFixed(4);
+                }
+            },
+            sun: function(activeId, val) {
+                if (activeId === 'sun-in') {
+                    document.getElementById('sun-cm').value = (val * 3.0303).toFixed(3);
+                } else {
+                    document.getElementById('sun-in').value = (val / 3.0303).toFixed(4);
+                }
+            },
+            ken: function(activeId, val) {
+                if (activeId === 'ken-in') {
+                    document.getElementById('ken-m').value = (val * 1.818).toFixed(3);
+                } else {
+                    document.getElementById('ken-in').value = (val / 1.818).toFixed(4);
+                }
+            },
+            momme: function(activeId, val) {
+                if (activeId === 'momme-in') {
+                    document.getElementById('momme-g').value = (val * 3.75).toFixed(2);
+                    document.getElementById('momme-kg').value = (val * 0.00375).toFixed(5);
+                } else if (activeId === 'momme-g') {
+                    document.getElementById('momme-in').value = (val / 3.75).toFixed(3);
+                    document.getElementById('momme-kg').value = (val / 3.75 * 0.00375).toFixed(5);
+                } else if (activeId === 'momme-kg') {
+                    document.getElementById('momme-in').value = (val / 0.00375).toFixed(2);
+                    document.getElementById('momme-g').value = (val / 0.00375 * 3.75).toFixed(2);
+                }
+            },
+            kan: function(activeId, val) {
+                if (activeId === 'kan-in') {
+                    document.getElementById('kan-kg').value = (val * 3.75).toFixed(2);
+                    document.getElementById('kan-g').value = (val * 3750).toFixed(0);
+                } else if (activeId === 'kan-kg') {
+                    document.getElementById('kan-in').value = (val / 3.75).toFixed(3);
+                    document.getElementById('kan-g').value = (val / 3.75 * 3750).toFixed(0);
+                } else if (activeId === 'kan-g') {
+                    document.getElementById('kan-in').value = (val / 3750).toFixed(5);
+                    document.getElementById('kan-kg').value = (val / 3750 * 3.75).toFixed(3);
+                }
+            },
+            // 坪 (修正済み: cm² のまま、×表記なし)
+            tsubo: function(activeId, val) {
+                if (activeId === 'tsubo-in') {
+                    document.getElementById('tsubo-m2').value = (val * 3.30579).toFixed(5);
+                    document.getElementById('tsubo-cm2').value = (val * 3.30579).toFixed(5);
+                } else {
+                    // もし m² または cm² から逆算
+                    let base;
+                    if (activeId === 'tsubo-m2') {
+                        base = val / 3.30579;
+                    } else { // tsubo-cm2
+                        base = val / 3.30579;
+                    }
+                    document.getElementById('tsubo-in').value = base.toFixed(5);
+                    document.getElementById('tsubo-m2').value = (base * 3.30579).toFixed(5);
+                    document.getElementById('tsubo-cm2').value = (base * 3.30579).toFixed(5);
+                }
+            },
+            jyo: function(activeId, val) {
+                if (activeId === 'jyo-in') {
+                    document.getElementById('jyo-m2').value = (val * 1.62).toFixed(3);
+                } else {
+                    document.getElementById('jyo-in').value = (val / 1.62).toFixed(3);
+                }
+            },
+            // ★★★ 歩き時間計算 ★★★
+            walk_fast: function(activeId, val) {
+                const pace = 10; // 10分/km
+                if (activeId === 'walk-fast-km') {
+                    let min = val * pace;
+                    document.getElementById('walk-fast-min').value = min.toFixed(1);
+                    document.getElementById('walk-fast-h').value = (min / 60).toFixed(4);
+                } else if (activeId === 'walk-fast-min') {
+                    let km = val / pace;
+                    document.getElementById('walk-fast-km').value = km.toFixed(3);
+                    document.getElementById('walk-fast-h').value = (val / 60).toFixed(4);
+                } else if (activeId === 'walk-fast-h') {
+                    let min = val * 60;
+                    document.getElementById('walk-fast-min').value = min.toFixed(1);
+                    document.getElementById('walk-fast-km').value = (min / pace).toFixed(3);
+                }
+            },
+            walk_normal: function(activeId, val) {
+                const pace = 13; // 13分/km
+                if (activeId === 'walk-normal-km') {
+                    let min = val * pace;
+                    document.getElementById('walk-normal-min').value = min.toFixed(1);
+                    document.getElementById('walk-normal-h').value = (min / 60).toFixed(4);
+                } else if (activeId === 'walk-normal-min') {
+                    let km = val / pace;
+                    document.getElementById('walk-normal-km').value = km.toFixed(3);
+                    document.getElementById('walk-normal-h').value = (val / 60).toFixed(4);
+                } else if (activeId === 'walk-normal-h') {
+                    let min = val * 60;
+                    document.getElementById('walk-normal-min').value = min.toFixed(1);
+                    document.getElementById('walk-normal-km').value = (min / pace).toFixed(3);
+                }
+            },
+            walk_slow: function(activeId, val) {
+                const pace = 18; // 18分/km
+                if (activeId === 'walk-slow-km') {
+                    let min = val * pace;
+                    document.getElementById('walk-slow-min').value = min.toFixed(1);
+                    document.getElementById('walk-slow-h').value = (min / 60).toFixed(4);
+                } else if (activeId === 'walk-slow-min') {
+                    let km = val / pace;
+                    document.getElementById('walk-slow-km').value = km.toFixed(3);
+                    document.getElementById('walk-slow-h').value = (val / 60).toFixed(4);
+                } else if (activeId === 'walk-slow-h') {
+                    let min = val * 60;
+                    document.getElementById('walk-slow-min').value = min.toFixed(1);
+                    document.getElementById('walk-slow-km').value = (min / pace).toFixed(3);
+                }
+            }
+        };
+
+        // 全ての＝ボタンにイベント設定
+        document.querySelectorAll('.equal-btn[data-row]').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const rowName = this.dataset.row;
+                calculateRow(rowName);
+            });
+        });
+
+        // Enterキーで計算
+        allInputs.forEach(inp => {
+            inp.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const rowDiv = inp.closest('.conversion-row');
+                    if (rowDiv) {
+                        const rowName = rowDiv.dataset.row;
+                        calculateRow(rowName);
+                    }
+                }
+            });
+        });
+
+        // 初期表示の整合性
+        window.addEventListener('load', function() {
+            const rows = document.querySelectorAll('.conversion-row[data-row]');
+            rows.forEach(row => {
+                const rowName = row.dataset.row;
+                if (rowName) {
+                    const firstInput = row.querySelector('input.conv-input');
+                    if (firstInput) {
+                        lastEditedInput = firstInput;
+                        calculateRow(rowName);
+                    }
+                }
+            });
+        });
+    })();
+</script>
+</body>
+</html>
